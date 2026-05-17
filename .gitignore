@@ -217,11 +217,14 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
-# 데이터셋 (용량 너무 큼)
+# 데이터셋 (용량 너무 큼 - 절대 올리면 안 됨)
 data/
-*.jpg
-*.png
 *.zip
+
+# 데이터셋 이미지 (data 폴더 안 이미지만 제외, results는 허용)
+data/**/*.jpg
+data/**/*.jpeg
+data/**/*.png
 
 # 모델 가중치
 *.pth
