@@ -216,3 +216,25 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# 데이터셋 (용량 너무 큼)
+data/
+*.jpg
+*.png
+*.zip
+
+# 모델 가중치
+*.pth
+*.pt
+*.ckpt
+
+# Jupyter 체크포인트
+.ipynb_checkpoints/
+
+# Python 캐시
+__pycache__/
+*.pyc
+
+# 환경 설정
+.env
+venv/
