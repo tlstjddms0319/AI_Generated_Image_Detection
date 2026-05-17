@@ -9,12 +9,23 @@ NTIRE 2026 데이터셋 관련 공통 모듈
 """
 
 import os
+import platform
 import pandas as pd
 import torch
+import matplotlib.pyplot as plt
 from pathlib import Path
 from PIL import Image
 from torch.utils.data import Dataset, DataLoader, random_split
 from torchvision import transforms
+
+# ── 한글 폰트 설정 (OS별 자동 적용) ────────────────────────
+if platform.system() == "Windows":
+    plt.rcParams["font.family"] = "Malgun Gothic"   # 맑은 고딕 (Windows 기본 내장)
+elif platform.system() == "Darwin":
+    plt.rcParams["font.family"] = "AppleGothic"     # Mac
+else:
+    plt.rcParams["font.family"] = "NanumGothic"     # Linux
+plt.rcParams["axes.unicode_minus"] = False           # 마이너스 기호 깨짐 방지
 
 # ── ImageNet 정규화 상수 ────────────────────────────────────
 IMAGENET_MEAN = [0.485, 0.456, 0.406]
