@@ -1,0 +1,13 @@
+torch
+torchvision
+torchaudio
+grad-cam
+timm
+pandas
+Pillow
+matplotlib
+scikit-learn
+tqdm
+jupyter
+notebook
+ipykernel
