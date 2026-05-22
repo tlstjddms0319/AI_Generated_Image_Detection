@@ -17,7 +17,7 @@ from pathlib import Path
 from PIL import Image
 from torch.utils.data import Dataset, DataLoader, random_split
 from torchvision import transforms
-
+import copy
 # ── 한글 폰트 설정 (OS별 자동 적용) ────────────────────────
 if platform.system() == "Windows":
     plt.rcParams["font.family"] = "Malgun Gothic"   # 맑은 고딕 (Windows 기본 내장)
@@ -124,7 +124,9 @@ def get_dataloaders(
         full_dataset, [train_size, val_size, test_size], generator=generator
     )
 
-    # Val / Test 는 증강 없이 정규화만
+    #수정
+    val_ds.dataset  = copy.copy(full_dataset)
+    test_ds.dataset = copy.copy(full_dataset)
     val_ds.dataset.transform  = val_transform
     test_ds.dataset.transform = val_transform
 
