@@ -9,15 +9,15 @@ NTIRE 2026 데이터셋 관련 공통 모듈
 """
 
 import os
+import copy
 import platform
 import pandas as pd
 import torch
 import matplotlib.pyplot as plt
 from pathlib import Path
 from PIL import Image
-from torch.utils.data import Dataset, DataLoader, random_split
+from torch.utils.data import Dataset, DataLoader, random_split, Subset
 from torchvision import transforms
-import copy
 # ── 한글 폰트 설정 (OS별 자동 적용) ────────────────────────
 if platform.system() == "Windows":
     plt.rcParams["font.family"] = "Malgun Gothic"   # 맑은 고딕 (Windows 기본 내장)
@@ -54,7 +54,15 @@ class AIGenDetDataset(Dataset):
     NTIRE 2026 Train Dataset (shard 구조)
     label: 0 = Real, 1 = AI Generated
     """
-    def __init__(self, shard_dir: str, shard_nums=None, transform=None):
+    def __init__(self, shard_dir: str, shard_nums=None, transform=None, max_samples: int = None):
+        """
+        Args:
+            shard_dir  : shard 폴더들이 있는 상위 경로
+            shard_nums : 사용할 shard 번호 리스트 (None이면 전체)
+            transform  : 이미지 변환
+            max_samples: 사용할 최대 샘플 수 (None이면 전체 사용)
+                         클래스 균형 유지 (Real:AI = 1:1)
+        """
         self.shard_root = shard_dir
         self.transform  = transform
 
@@ -73,7 +81,22 @@ class AIGenDetDataset(Dataset):
             dfs.append(df)
 
         self.label_df = pd.concat(dfs, ignore_index=True)
-        print(f"[Dataset] shard {len(shard_dirs)}개 로드 완료 — 총 {len(self.label_df):,}장")
+
+        # max_samples 지정 시 클래스 균형 맞춰서 샘플링
+        if max_samples is not None:
+            n_each = max_samples // 2   # Real / AI 각각 절반씩
+            real_df = self.label_df[self.label_df["label"] == 0].sample(
+                n=min(n_each, len(self.label_df[self.label_df["label"] == 0])),
+                random_state=42
+            )
+            fake_df = self.label_df[self.label_df["label"] == 1].sample(
+                n=min(n_each, len(self.label_df[self.label_df["label"] == 1])),
+                random_state=42
+            )
+            self.label_df = pd.concat([real_df, fake_df]).sample(frac=1, random_state=42).reset_index(drop=True)
+
+        print(f"[Dataset] shard {len(shard_dirs)}개 로드 완료 — 총 {len(self.label_df):,}장 "
+              f"(Real: {(self.label_df['label']==0).sum():,} / AI: {(self.label_df['label']==1).sum():,})")
 
     def __len__(self):
         return len(self.label_df)
@@ -93,25 +116,32 @@ class AIGenDetDataset(Dataset):
 
 
 def get_dataloaders(
-    shard_root:  str  = "../data/train",
-    shard_nums        = [0],
-    batch_size:  int  = 32,
-    val_ratio:   float = 0.1,
-    test_ratio:  float = 0.1,
-    seed:        int  = 42,
-    num_workers: int  = 0,       # Windows 환경: 0 권장
+    shard_root:   str   = "../data/train",
+    shard_nums          = [0],
+    batch_size:   int   = 32,
+    val_ratio:    float = 0.1,
+    test_ratio:   float = 0.1,
+    seed:         int   = 42,
+    num_workers:  int   = 0,         # Windows 환경: 0 권장
+    max_samples:  int   = None,      # 사용할 최대 샘플 수 (예: 10000)
 ):
     """
     DataLoader 한 번에 반환하는 헬퍼 함수.
+
+    Args:
+        max_samples: 전체 데이터 중 사용할 샘플 수
+                     예) max_samples=10000 → Real 5000 + AI 5000
+                     None이면 전체 shard 사용
 
     Returns:
         train_loader, val_loader, test_loader,
         train_ds, val_ds, test_ds
     """
     full_dataset = AIGenDetDataset(
-        shard_dir  = shard_root,
-        shard_nums = shard_nums,
-        transform  = train_transform
+        shard_dir   = shard_root,
+        shard_nums  = shard_nums,
+        transform   = train_transform,
+        max_samples = max_samples     # 10K 제한
     )
 
     total      = len(full_dataset)
