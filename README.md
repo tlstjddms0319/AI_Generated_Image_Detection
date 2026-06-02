@@ -157,17 +157,6 @@ ResNet-50 (ImageNet pretrained)
 
 ---
 
-## 👥 Team
-
-| 팀원 | 담당 역할 |
-|:---|:---|
-| 김지민 | 데이터 수집 및 전처리, Deduplication 구현 |
-| 박우석 | 모델 학습 파이프라인 구축, 하이퍼파라미터 튜닝 |
-| 성주인 | Grad-CAM XAI 구현 및 시각화 분석 |
-| 신성은 | FGSM 적대적 공격 구현 및 Robustness 평가 |
-
----
-
 ## 📚 References
 
 | # | 논문 | 링크 |
