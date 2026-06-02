@@ -173,3 +173,35 @@ ResNet-50 (ImageNet pretrained)
 
 본 프로젝트에서는 Claude(Anthropic)를 코드 디버깅, 구현 방식 검토, 보고서 문장 개선을 위한 보조 도구로 사용하였습니다.
 데이터셋 선택, 실험 설계, 코드 실행, 결과 해석 및 최종 내용 검토는 팀원들이 직접 수행하였습니다.
+
+---
+
+## ⚠️ 한계점 및 개선 방향
+
+### 1. 모델 견고성 부족
+- **현상**: FGSM eps=0.01의 단순 공격에도 AUC 0.0029, ASR 0.9651로 모델이 완전 무력화됨
+- **개선 방향**: Adversarial Training 적용 — 공격 샘플을 학습 데이터에 포함시켜 견고성 강화
+
+### 2. 단일 스텝 공격만 평가
+- **현상**: FGSM은 단일 스텝 공격으로, 실제 환경의 강력한 반복 공격은 미평가
+- **개선 방향**: PGD(Projected Gradient Descent), C&W(Carlini & Wagner) 등 반복 공격 기법 추가 실험
+
+### 3. Unseen Generator 일반화 미검증
+- **현상**: Train/Test가 동일한 NTIRE 2026 분포를 공유하여, 학습에 없던 새로운 생성 모델에 대한 탐지 성능 미확인
+- **개선 방향**: DALL-E, Midjourney 등 외부 생성 모델 이미지로 별도 평가셋 구성 후 검증
+
+### 4. 제한된 데이터 규모
+- **현상**: 전체 277K장 중 shard_0+shard_1 (100K장, 72K 사용)만 활용
+- **개선 방향**: 전체 6개 shard (277K) 확장 학습으로 성능 및 일반화 개선 가능
+
+### 5. 단일 백본 아키텍처
+- **현상**: ResNet-50만 사용하여 다른 아키텍처와의 비교 없음
+- **개선 방향**: EfficientNet-B4, Vision Transformer(ViT), ConvNeXt 등 비교 실험으로 최적 백본 탐색
+
+### 6. AUC 단독 지표의 한계
+- **현상**: AUC는 공격 후에도 높게 유지되어 robustness를 과대평가할 수 있음
+- **개선 방향**: ASR, Accuracy Drop, F1-Score, Precision/Recall 등 다중 지표 표준화 및 보고
+
+### 7. Deduplication 완전성
+- **현상**: dHash 기반 중복 탐지 (64장 제거)로 hash collision 가능성 존재
+- **개선 방향**: pHash 병행 사용 및 유사 이미지(near-duplicate) 탐지 임계값 실험
