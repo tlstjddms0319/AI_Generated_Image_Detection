@@ -1,1 +1,1 @@
-# deepfake-detection
+# AI-Generated Image Detection
