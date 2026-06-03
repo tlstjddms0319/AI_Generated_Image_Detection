@@ -44,10 +44,9 @@ AI 생성 이미지 탐지(DeepFake Detection), 설명 가능한 AI(XAI), 적대
 </div>
 
 ![Training Curve](results/training_curve.png)
-*학습 곡선 (Loss / Val AUC)*
 
 ![Robustness Analysis](results/robustness_analysis.png)
-<sub>FGSM epsilon별 AUC 및 ASR 변화</sub>
+
 ---
 
 ## 🗂️ Project Structure
