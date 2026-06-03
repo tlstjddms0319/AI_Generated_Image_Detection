@@ -149,7 +149,7 @@ ResNet-50 (ImageNet pretrained)
 
 ### Phase 1 — 탐지 성능
 - Clean Test AUC **0.9546**, Accuracy **0.8667** 달성
-- - Real F1 **0.86** / AI F1 **0.87** (Confusion Matrix 기준)
+- Real F1 **0.86** / AI F1 **0.87** (Confusion Matrix 기준)
 - 20개 이상의 다양한 생성 모델이 포함된 데이터셋에서 높은 일반화 성능
 
 ### Phase 2 — Grad-CAM
