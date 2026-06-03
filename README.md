@@ -43,6 +43,11 @@ AI 생성 이미지 탐지(DeepFake Detection), 설명 가능한 AI(XAI), 적대
 
 </div>
 
+![Training Curve](results/training_curve.png)
+*학습 곡선 (Loss / Val AUC)*
+
+![Robustness Analysis](results/robustness_analysis.png)
+*FGSM epsilon별 AUC 및 ASR 변화*
 ---
 
 ## 🗂️ Project Structure
@@ -51,6 +56,7 @@ AI 생성 이미지 탐지(DeepFake Detection), 설명 가능한 AI(XAI), 적대
 deepfake-detection/
 ├── final_report.ipynb      # 최종 보고서 (전체 파이프라인)
 ├── notebooks/
+│   ├── 00_setup_check.ipynb    # GPU 및 패키지 확인
 │   ├── 01_dataset.ipynb    # 데이터셋 탐색
 │   ├── 02_deduplication.ipynb  # 중복 제거
 │   ├── 03_train.ipynb      # 모델 학습
@@ -144,6 +150,7 @@ ResNet-50 (ImageNet pretrained)
 
 ### Phase 1 — 탐지 성능
 - Clean Test AUC **0.9546**, Accuracy **0.8667** 달성
+- - Real F1 **0.86** / AI F1 **0.87** (Confusion Matrix 기준)
 - 20개 이상의 다양한 생성 모델이 포함된 데이터셋에서 높은 일반화 성능
 
 ### Phase 2 — Grad-CAM
